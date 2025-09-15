@@ -1,7 +1,10 @@
 # ADVAITZZ — Advanced Dork & Recon Toolkit
 
+
 **Codename:** ADVAITZZ 
+
 **Author:** Shantnoo Thakur
+
 **Repo:** https://github.com/shantnoothakur/dorkk
 
 **Short:** ADVAITZZ is an interactive Google Dork generator and passive recon helper for legal bug-bounty researchers, OSINT investigators, and defenders. It helps create targeted search queries (dorks), collect passive intelligence, and export results for further analysis.
