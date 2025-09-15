@@ -1,149 +1,282 @@
-# =========================
-# ADVAITZZ — Quick start
-# =========================
+# ADVAITZZ — Advanced Dork & Recon Toolkit
 
-ADVAITZZ is an interactive Google Dork generator and recon helper aimed for **legal** bug-bounty researchers and OSINT investigators.
+**Codename:** ADVAITZZ  
+**Author:** Shant / ADVAITZZ Team  
+**Repo:** https://github.com/yourusername/advaitzz
 
+**Short:** ADVAITZZ is an interactive Google Dork generator and passive recon helper for legal bug-bounty researchers, OSINT investigators, and defenders. It helps create targeted search queries (dorks), collect passive intelligence, and export results for further analysis.
 
-**Features**
-- Interactive CLI and non-interactive (CLI flags) modes.
-- Multiple categories (login pages, sensitive files, docs, index-of, subdomains, cloud, secrets patterns).
-- Export results to TXT/CSV.
-- Single/multi-domain input (file or args).
-- Quick `--all` mode to generate every category.
-- `--quiet` for scripting, `--output` to save, `--format` (txt/csv).
+> ⚠️ **Legal disclaimer:** Use this tool **only** on targets you have explicit permission to test (bug bounty programs, your own assets, or public OSINT research). ADVAITZZ is intended for passive information gathering and automation — it does **not** perform active exploitation. The author is not responsible for misuse.
 
+---
 
-**Disclaimer**: Use only on targets that allow reconnaissance. Do not use ADVAITZZ for unauthorized access or abuse.
+## Table of Contents
+- Features
+- Quick Install (Kali / Debian / Windows)
+- Usage (CLI & GUI)
+- Commands & Options (reference)
+- Examples
+- Extra Tools & Utilities
+- Development & Contributing
+- Security & Responsible Disclosure
+- Changelog & Roadmap
+- License
 
+---
 
-# 1) Clone the repo (or copy files into a folder)
-git clone https://github.com/shantnoothakur/dorkk
-cd dorkk
+## Features (what it does)
+ADVAITZZ focuses on safe, repeatable recon and dork generation. Major features:
 
-# 2) Create & activate a Python virtual environment (recommended)
+- Interactive CLI and non-interactive (flags) modes.
+- PySimpleGUI desktop front-end (cross-platform).
+- Multiple dork categories: Login Pages, Sensitive Files, Documents, Index-Of, Subdomains, Cloud buckets, Secrets patterns, Custom templates.
+- Multi-domain input (single domain, file with domains).
+- Export to TXT and CSV.
+- `--all` to generate every category.
+- `--quiet` for piping and scripting.
+- Passive recon helpers: WHOIS, DNS A records, crt.sh certificate enumeration (passive), subdomain list aggregation (passive).
+- Proxy support (for search engines where allowed) and random user-agent support to avoid trivial blocking.
+- Banner generation utility (SVG → PNG) for README and documentation.
+- Encoding/Decoding utilities: Base64, MD5 (local transforms).
+- Safe-by-default: no active scanning modules installed by default. Any active features require opt-in and explicit warnings.
+- Extensible templates and a GUI to manage templates, history, settings, API keys (optional).
+- Exportable project history (SQLite) for audit/repeatability.
+
+---
+
+## Quick Install
+
+### 1) Clone the repo
+```bash
+git clone https://github.com/yourusername/advaitzz.git
+cd advaitzz
+2) Create & activate a virtualenv (recommended)
+Linux / macOS:
+
+bash
+Copy code
 python3 -m venv venv
-. venv/bin/activate        # Bash / Zsh (Kali / Linux)
-# On Fish shell: source venv/bin/activate.fish
-# On Windows (PowerShell): .\venv\Scripts\Activate.ps1
+. venv/bin/activate
+Windows (PowerShell):
 
-# 3) Install CLI-only dependencies (fast)
+powershell
+Copy code
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+3) Install dependencies
+CLI only:
+
+bash
+Copy code
 pip install -r requirements.txt
+GUI (optional):
 
-# 4) Install GUI dependencies (if you plan to run the GUI)
-# (optional) only if you want GUI mode
+bash
+Copy code
 pip install -r requirements_gui.txt
-
-# 5) Install ADVAITZZ in editable/developer mode so changes are immediate
+4) Install ADVAITZZ (editable mode for development)
+bash
+Copy code
 pip install -e .
+If you prefer a global command on Kali:
 
-# 6) Show help for the CLI
-advaitzz --help
-# or (if entrypoint isn't available)
-python -m advaitzz.cli --help
-
-# =========================
-# Basic usage examples
-# =========================
-
-# Interactive CLI (prompts for domain if none provided)
-advaitzz
-
-# Non-interactive: generate login dorks for example.com and print to stdout
-advaitzz example.com --categories login
-
-# Save results as a text file
-advaitzz example.com --categories login,docs --output example_dorks.txt --format txt
-
-# Save results as CSV
-advaitzz example.com --categories login,docs --output example_dorks.csv --format csv
-
-# Generate all categories for a domain
-advaitzz example.com --all --output all_dorks.txt
-
-# Quiet mode suitable for piping
-advaitzz example.com --categories login --quiet
-
-# Batch mode: supply a file with domains (one per line)
-# domains.txt contents example:
-# example.com
-# target.example
-advaitzz --input domains.txt --categories login,docs --output batch_dorks.txt
-
-# =========================
-# Running the GUI (optional)
-# =========================
-
-# Ensure GUI requirements installed (see earlier)
-# Then run:
-python advaitzz/gui.py
-
-# If you installed with `pip install -e .` you can still run the module directly:
-python -m advaitzz.gui
-
-# =========================
-# Packaging / install from GitHub
-# =========================
-
-# Install from your GitHub repo (users can install directly)
-pip install git+https://github.com/yourusername/advaitzz.git
-
-# Install a specific release tag
-pip install git+https://github.com/yourusername/advaitzz.git@v0.1.0
-
-# Build source distribution and wheel
-python setup.py sdist bdist_wheel
-# Output will be in dist/  (upload to PyPI if you want)
-
-# =========================
-# Make it convenient on Kali (system command)
-# =========================
-
-# Option A — install system-wide (not generally recommended):
+bash
+Copy code
 sudo pip install .
-
-# Option B — symlink the CLI script to a directory in PATH
-# (ensure advaitzz/cli.py has #!/usr/bin/env python3 and is executable)
+# or create a symlink:
 chmod +x advaitzz/cli.py
 sudo ln -s "$(pwd)/advaitzz/cli.py" /usr/local/bin/advaitzz
+Run / Usage
+CLI (interactive)
+bash
+Copy code
+advaitzz
+Prompts for domain and options interactively.
 
-# Now you can call `advaitzz` from any shell
+CLI (non-interactive)
+bash
+Copy code
+advaitzz example.com --categories login,docs --output example_dorks.txt
+CLI options (compact)
+bash
+Copy code
+advaitzz <domain> [--input file] [--categories login,docs] [--all] [--output file] [--format txt|csv] [--quiet]
+GUI (PySimpleGUI)
+bash
+Copy code
+python advaitzz/gui.py
+# or
+python -m advaitzz.gui
+The GUI includes tabs for:
 
-# =========================
-# Dev & CI (lint / test)
-# =========================
+Dork Generator (select categories, generate, export)
 
-# install dev-tools
-pip install flake8 pytest
+Passive Recon (WHOIS, DNS, crt.sh)
 
-# run linter
-flake8 .
+Templates (add/edit dork templates)
 
-# run tests (if you add them)
-pytest -q
+Settings (proxy, user-agent pool, API keys)
 
-# create & push a release tag
-git tag -a v0.1.0 -m "Initial release"
-git push origin v0.1.0
+History (saved runs, exports)
 
-# =========================
-# Banner generation (optional)
-# =========================
+Commands & Options — Full Reference
+lua
+Copy code
+Usage:
+  advaitzz [domain] [options]
 
-# If you want to auto-generate a banner PNG from the repository SVG:
-# 1. Make sure you installed these Python libs:
-pip install pillow cairosvg
+Options:
+  domain                  Single target domain (e.g., example.com)
+  --input, -i <file>      File with domains (one per line)
+  --categories, -c <cats> Comma separated categories (login,sensitive,docs,index,subdomains,cloud,secrets)
+  --all                   Generate all categories
+  --output, -o <file>     Save dorks to file (txt or csv if --format=csv)
+  --format <txt|csv>      Output format (default: txt)
+  --quiet                 Quiet mode (print dorks only — good for piping)
+  --help, -h              Show help
+  --version               Show version
+  --repair                Repair or reinstall tool (helper)
+  --update                Check for updates (git pull) — optional
+  --gui                   Launch GUI (same as `python -m advaitzz.gui`)
+Examples
+Interactive:
 
-# 2. Run the provided script (make_banner.py) — it will create advaitzz/banner.png
+bash
+Copy code
+advaitzz
+# follow prompts: enter example.com, choose categories, export
+Non-interactive:
+
+bash
+Copy code
+advaitzz example.com --categories login,docs
+Save results to txt:
+
+bash
+Copy code
+advaitzz example.com --categories login,docs --output mydorks.txt
+Save results to csv:
+
+bash
+Copy code
+advaitzz example.com --all --output all_dorks.csv --format csv
+Batch from file:
+
+bash
+Copy code
+advaitzz --input domains.txt --categories docs,subdomains --output results.csv --format csv
+Quiet mode (pipe into another tool):
+
+bash
+Copy code
+advaitzz example.com --categories login --quiet | tee login_dorks.txt
+Generate README banner (SVG → PNG):
+
+bash
+Copy code
 python make_banner.py
+# produces advaitzz/banner.png
+Install from GitHub:
 
-# =========================
-# Uninstall
-# =========================
+bash
+Copy code
+pip install git+https://github.com/yourusername/advaitzz.git
+# or for a release tag:
+pip install git+https://github.com/yourusername/advaitzz.git@v0.1.0
+Uninstall:
+
+bash
+Copy code
 pip uninstall -y advaitzz
+Extra Tools & Utilities
+make_banner.py — generate README banner PNG from advaitzz/logo.svg.
 
-# =========================
-# Important: legal & safety
-# =========================
-# Use ADVAITZZ only for passive recon, OSINT, and for targets/programs you are explicitly authorized to test.
-# Do NOT use these dorks to access or attack systems you do not own or have permission to test.
+advaitzz/gui.py — GUI front-end (optional).
+
+advaitzz/cli.py — main CLI entrypoint.
+
+requirements.txt / requirements_gui.txt — dependency lists.
+
+Safe-by-default policy & what I will not add
+To keep ADVAITZZ ethical and legally safe:
+
+No built-in active exploitation (RCE, exploit chains), interactive web shells, or automated attack modules will be added by default.
+
+Active network scanning (nmap-style port scanning) is not enabled by default; any active features must be explicitly opt-in, with clear warnings and an "I have permission" checkbox in the GUI.
+
+I will not provide exploit payloads or instructions to break into systems.
+
+If you want to add active modules, we will:
+
+Require explicit user confirmation.
+
+Add scope/targets verification and a local log of consent (for audit).
+
+Make modules optional and clearly labeled with risk.
+
+Development & Contributing
+Contributions are welcome — please follow these guidelines:
+
+Fork the repository.
+
+Create a feature branch: git checkout -b feat/some-feature
+
+Add tests where appropriate and update requirements*.txt.
+
+Run linter and tests: flake8 . / pytest -q
+
+Submit a PR with a clear description of the feature and the rationale.
+
+Files to pay attention to:
+
+advaitzz/cli.py — main CLI logic
+
+advaitzz/gui.py — GUI front-end
+
+advaitzz/templates/ — add new dork templates here
+
+make_banner.py — banner generation
+
+Security & Responsible Disclosure
+If you discover a vulnerability in ADVAITZZ:
+
+Do not publish exploit code.
+
+Open a private issue or email: security@yourdomain.tld (add address).
+
+Provide steps to reproduce, logs, and impact. We will respond within 7 days.
+
+Changelog & Roadmap
+v0.1.0 — Initial release
+
+Interactive CLI
+
+Dork templates
+
+Export to TXT/CSV
+
+GUI prototype (PySimpleGUI)
+
+Banner generator
+
+Planned
+
+Template marketplace / template import/export
+
+SQLite history and session export
+
+Optional Shodan/Bing integration behind API keys
+
+Optional active modules (opt-in, explicit confirmation & consent)
+
+Installer scripts for Kali packaging
+
+License
+This project is released under the MIT License. See LICENSE for details.
+
+Acknowledgments & credits
+Inspired by OSINT and dorking tools in the community.
+
+UI inspiration: PySimpleGUI for quick cross-platform front ends.
+
+Please respect other people's systems and privacy.
