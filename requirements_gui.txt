@@ -1,0 +1,7 @@
+PySimpleGUI>=4.60.0
+pandas>=1.0.0
+requests>=2.0.0
+dnspython>=2.0.0
+python-whois>=0.7.3
+cairosvg>=2.0.0 # optional, if you regenerate the banner from SVG
+Pillow>=8.0.0
