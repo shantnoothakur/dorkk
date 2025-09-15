@@ -1,11 +1,4 @@
 #!/usr/bin/env python3
-})
-return results
-
-
-
-
-@click.command()
 @click.argument('domains', required=False)
 @click.option('--input', '-i', 'input_file', type=click.Path(exists=True), help='File with domains (one per line)')
 @click.option('--categories', '-c', default='login,sensitive,docs,index,subdomains', help='Comma separated categories')
