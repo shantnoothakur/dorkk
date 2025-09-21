@@ -1,39 +1,50 @@
 #!/usr/bin/env python3
-from advaitzz.banner_anim import print_banner
+"""
+ADVAITZZ CLI - Dork generator and recon helper
+"""
+import sys
+from advaitzz.banner_anim import print_banner, spinner
 from advaitzz.template_manager import TemplateManager
 from advaitzz.history import HistoryDB
-from advaitzz.exports import export_results
+
+print_banner()
+
+tm = TemplateManager()
+history_db = HistoryDB()
 
 def main():
-    print_banner()
-    tm = TemplateManager()
-    history = HistoryDB()
-
-    print("Categories available:")
-    for c in tm.list_categories():
-        print(" -", c)
-
-    domain = input("\nEnter target domain: ").strip()
+    print("\nWelcome to ADVAITZZ CLI!\n")
+    domain = input("Enter target domain: ").strip()
     if not domain:
-        print("No domain entered, exiting.")
+        print("Domain is required. Exiting...")
         return
 
+    print("\nAvailable categories:")
+    cats = tm.list_categories()
+    for idx, cat in enumerate(cats, 1):
+        print(f"{idx}. {cat}")
+
+    selected = input("\nSelect categories (comma-separated numbers or 'all'): ").strip()
+    if selected.lower() == 'all':
+        selected_cats = cats
+    else:
+        try:
+            selected_cats = [cats[int(i)-1] for i in selected.split(',')]
+        except Exception:
+            print("Invalid selection. Exiting...")
+            return
+
+    print("\nGenerating dorks...")
+    spinner(1.5)
     results = []
-    print("\nGenerating dorks...\n")
-    for cat in tm.list_categories():
-        for tpl in tm.get_templates(cat):
-            dork = tpl.format(d=domain)
-            results.append({'domain': domain, 'category': cat, 'dork': dork})
-            print(f"[{cat}] {dork}")
+    for c in selected_cats:
+        for tpl in tm.get_templates(c):
+            results.append(tpl.format(d=domain))
 
-    history.record_run([domain], tm.list_categories(), '', len(results))
-
-    choice = input("\nSave results? (y/n) ")
-    if choice.lower() == 'y':
-        fname = input("Filename (with extension txt/csv/json/xlsx): ").strip()
-        fmt = fname.split('.')[-1]
-        export_results(results, fname, fmt)
-        print(f"Saved {len(results)} dorks to {fname}")
+    print(f"\nGenerated {len(results)} dorks:\n")
+    for r in results:
+        print(r)
+    history_db.record_run([domain], selected_cats, '', len(results))
 
 if __name__ == "__main__":
     main()
