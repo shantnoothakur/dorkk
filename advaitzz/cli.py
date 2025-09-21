@@ -1,34 +1,11 @@
 #!/usr/bin/env python3
-import sys
-import time
+from advaitzz.banner_anim import print_banner
 from advaitzz.template_manager import TemplateManager
 from advaitzz.history import HistoryDB
 from advaitzz.exports import export_results
 
-# Animated ASCII banner
-BANNER = r"""
-    ___    ____  __      __    ___   ___ ___  ____
-   /   |  / __ \/ /     / /   /   | /   |__ \/ __ \
-  / /| | / / / / /     / /   / /| |/ /| |_/ / / / /
- / ___ |/ /_/ / /___  / /___/ ___ / ___ |/ /_/ / 
-/_/  |_/_____ /_____/ /_____/_/  |_/_/  |_/_____/  
-"""
-
-def animate_banner(text, delay=0.005):
-    """Prints the banner with a typewriter effect"""
-    for line in text.splitlines():
-        for char in line:
-            sys.stdout.write(char)
-            sys.stdout.flush()
-            time.sleep(delay)
-        sys.stdout.write("\n")
-        sys.stdout.flush()
-        time.sleep(0.03)
-    print("\n")
-
 def main():
-    animate_banner(BANNER)
-
+    print_banner()
     tm = TemplateManager()
     history = HistoryDB()
 
